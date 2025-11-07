@@ -1,14 +1,8 @@
 import os
-import smtplib
 import csv
-from email.message import EmailMessage
 from datetime import datetime
 
-# Pega os valores do secret
-remetente = os.environ.get("EMAIL_USER")
-senha = os.environ.get("EMAIL_PASS")
-
-# Caminho do CSV de destinatários
+# Caminho do CSV de destinatários (sample)
 csv_file = "data/destinatarios.sample.csv"
 
 # Pastas de log
@@ -26,28 +20,18 @@ def log(mensagem, tipo="sucesso"):
     with open(arquivo_log, "a", encoding="utf-8") as f:
         f.write(linha + "\n")
 
-# Função para enviar e-mail HTML com mensagem automática
+# Função para "enviar" e-mail (simulação)
 def enviar_email(dados):
-    mensagem = EmailMessage()
-    mensagem["Subject"] = "Conteúdo Personalizado para Você"
-    mensagem["From"] = remetente
-    mensagem["To"] = dados["email"]
-
-    # Conteúdo HTML automático personalizado (apenas com colunas existentes)
-    html_content = f"""
-    <html>
-        <body>
-            <p>Olá <b>{dados['nome']}</b>,</p>
-            <p>Sabemos que você se interessa por conteúdos relacionados a <i>{dados['profissao']}</i>.</p>
-            <p>Temos novidades que você vai adorar!</p>
-            <p>Atenciosamente,<br>Equipe de Automação</p>
-        </body>
-    </html>
-    """
-    mensagem.add_alternative(html_content, subtype='html')
-
     try:
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as servidor:
-            servidor.login(remetente, senha)
-            servidor.send_message(mensagem)
-        log(f"E-mail enviado para {dados['nome']} <{dados['email']}>", "sucess
+        # Simula envio ao invés de enviar de verdade
+        print(f"[SIMULADO] Envio de e-mail para {dados['nome']} <{dados['email']}> sobre {dados['profissao']}")
+        log(f"[SIMULADO] E-mail enviado para {dados['nome']} <{dados['email']}>", "sucesso")
+    except Exception as e:
+        log(f"[SIMULADO] Erro ao enviar para {dados['nome']} <{dados['email']}>: {e}", "falha")
+
+# Ler CSV e enviar e-mails (simulação)
+with open(csv_file, newline="", encoding="utf-8") as arquivo:
+    leitor = csv.DictReader(arquivo)
+    for linha in leitor:
+        enviar_email(linha)
+
