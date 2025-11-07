@@ -9,7 +9,7 @@ remetente = os.environ.get("EMAIL_USER")
 senha = os.environ.get("EMAIL_PASS")
 
 # Caminho do CSV de destinatários
-csv_file = "data/destinatarios.csv"
+csv_file = "data/destinatarios.sample.csv"
 
 # Pastas de log
 log_folder = "logs"
@@ -33,12 +33,12 @@ def enviar_email(dados):
     mensagem["From"] = remetente
     mensagem["To"] = dados["email"]
 
-    # Conteúdo HTML automático personalizado
+    # Conteúdo HTML automático personalizado (apenas com colunas existentes)
     html_content = f"""
     <html>
         <body>
             <p>Olá <b>{dados['nome']}</b>,</p>
-            <p>Como <i>{dados['cargo']} na {dados['empresa']}</i>, sabemos que em {dados['cidade']} você se interessa por conteúdos relacionados a {dados['profissao']}.</p>
+            <p>Sabemos que você se interessa por conteúdos relacionados a <i>{dados['profissao']}</i>.</p>
             <p>Temos novidades que você vai adorar!</p>
             <p>Atenciosamente,<br>Equipe de Automação</p>
         </body>
@@ -50,12 +50,4 @@ def enviar_email(dados):
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as servidor:
             servidor.login(remetente, senha)
             servidor.send_message(mensagem)
-        log(f"E-mail enviado para {dados['nome']} <{dados['email']}>", "sucesso")
-    except Exception as e:
-        log(f"Erro ao enviar para {dados['nome']} <{dados['email']}>: {e}", "falha")
-
-# Ler CSV e enviar e-mails
-with open(csv_file, newline="", encoding="utf-8") as arquivo:
-    leitor = csv.DictReader(arquivo)
-    for linha in leitor:
-        enviar_email(linha)
+        log(f"E-mail enviado para {dados['nome']} <{dados['email']}>", "sucess
