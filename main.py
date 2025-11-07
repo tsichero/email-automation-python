@@ -26,19 +26,20 @@ def log(mensagem, tipo="sucesso"):
     with open(arquivo_log, "a", encoding="utf-8") as f:
         f.write(linha + "\n")
 
-# Função para enviar e-mail HTML
-def enviar_email(nome, email, profissao):
+# Função para enviar e-mail HTML com mensagem automática
+def enviar_email(dados):
     mensagem = EmailMessage()
-    mensagem["Subject"] = "Teste de Automação Profissional"
+    mensagem["Subject"] = "Conteúdo Personalizado para Você"
     mensagem["From"] = remetente
-    mensagem["To"] = email
+    mensagem["To"] = dados["email"]
 
-    # Conteúdo HTML personalizado
+    # Conteúdo HTML automático personalizado
     html_content = f"""
     <html>
         <body>
-            <p>Olá <b>{nome}</b>,</p>
-            <p>Sabemos que como <i>{profissao}</i> você vai se interessar pelo nosso conteúdo!</p>
+            <p>Olá <b>{dados['nome']}</b>,</p>
+            <p>Como <i>{dados['cargo']} na {dados['empresa']}</i>, sabemos que em {dados['cidade']} você se interessa por conteúdos relacionados a {dados['profissao']}.</p>
+            <p>Temos novidades que você vai adorar!</p>
             <p>Atenciosamente,<br>Equipe de Automação</p>
         </body>
     </html>
@@ -49,12 +50,12 @@ def enviar_email(nome, email, profissao):
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as servidor:
             servidor.login(remetente, senha)
             servidor.send_message(mensagem)
-        log(f"E-mail enviado para {nome} <{email}>", "sucesso")
+        log(f"E-mail enviado para {dados['nome']} <{dados['email']}>", "sucesso")
     except Exception as e:
-        log(f"Erro ao enviar para {nome} <{email}>: {e}", "falha")
+        log(f"Erro ao enviar para {dados['nome']} <{dados['email']}>: {e}", "falha")
 
 # Ler CSV e enviar e-mails
 with open(csv_file, newline="", encoding="utf-8") as arquivo:
     leitor = csv.DictReader(arquivo)
     for linha in leitor:
-        enviar_email(linha["nome"], linha["email"], linha["profissao"])
+        enviar_email(linha)
