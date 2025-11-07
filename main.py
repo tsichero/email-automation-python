@@ -2,31 +2,23 @@ import os
 import smtplib
 from email.message import EmailMessage
 
-# Pega as variáveis de ambiente definidas no GitHub Actions
+# Pega os valores do secret
 remetente = os.environ.get("EMAIL_USER")
 senha = os.environ.get("EMAIL_PASS")
 
-# Verificação de segurança
-if not remetente or not senha:
-    raise ValueError("EMAIL_USER ou EMAIL_PASS não estão definidos!")
+# Configura o e-mail
+destinatario = "destino@example.com"
+mensagem = EmailMessage()
+mensagem.set_content("Olá! Teste de envio de e-mail via Python.")
+mensagem["Subject"] = "Teste"
+mensagem["From"] = remetente
+mensagem["To"] = destinatario
 
-# Configura a mensagem
-msg = EmailMessage()
-msg["Subject"] = "Teste de envio"
-msg["From"] = remetente
-msg["To"] = "destinatario@exemplo.com"  # substitua pelo e-mail que quer receber
-msg.set_content("Olá! Este é um teste de envio de e-mail pelo Gmail SMTP.")
+# Conecta ao servidor SMTP e envia
+with smtplib.SMTP_SSL("smtp.gmail.com", 465) as servidor:
+    servidor.login(remetente, senha)
+    servidor.send_message(mensagem)
 
-# Envio do e-mail com tratamento de erros
-try:
-    with smtplib.SMTP("smtp.gmail.com", 587) as servidor:
-        servidor.starttls()  # ativa criptografia
-        servidor.login(remetente, senha)
-        servidor.send_message(msg)
-        print("Email enviado com sucesso!")
-except smtplib.SMTPAuthenticationError:
-    print("Erro de autenticação: verifique EMAIL_USER e EMAIL_PASS (senha de app do Gmail).")
-except Exception as e:
-    print(f"Ocorreu um erro: {e}")
+print("E-mail enviado com sucesso!")
 
 
