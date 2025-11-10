@@ -6,6 +6,39 @@ from datetime import datetime
 from email.message import EmailMessage
 
 # ==========================
+# CONFIGURAÇÃO DE LOG
+# ==========================
+LOG_DIR = "logs"
+LOG_FILE = os.path.join(LOG_DIR, f"execucao_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log")
+
+# Cria a pasta 'logs' se não existir
+os.makedirs(LOG_DIR, exist_ok=True)
+
+# Configura o logger (salva em arquivo e exibe no console)
+logging.basicConfig(
+    filename=LOG_FILE,
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    encoding="utf-8"
+)
+
+# Também exibe no terminal
+console = logging.StreamHandler()
+console.setLevel(logging.INFO)
+formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+console.setFormatter(formatter)
+logging.getLogger().addHandler(console)
+
+print(f"📂 Log sendo salvo em: {LOG_FILE}")
+
+import os
+import csv
+import smtplib
+import logging
+from datetime import datetime
+from email.message import EmailMessage
+
+# ==========================
 # CONFIGURAÇÕES GERAIS
 # ==========================
 MODO_TESTE = True  # ⬅️ Altere para False para enviar e-mails de verdade 🚀
